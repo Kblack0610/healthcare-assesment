@@ -9,7 +9,7 @@ Add/Edit Modal:
 <img width="1681" height="934" alt="2025-12-02-11:07:36" src="https://github.com/user-attachments/assets/c547da4c-170e-4b8b-84f4-29f62a543d4e" />
 
 ## Getting Started
-I have the frontend pointed to 5001, please start the server there.
+I have the frontend pointed to 5001, please start the server there. Use `npm run dev` to start the frontend.
 
 ## What I did to modernize this project
   1. Entity-Agnostic DataTable Component - A generic, reusable DataTable<T> component that handles any entity type (Patients,
