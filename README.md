@@ -1,8 +1,9 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-Views:
-<img width="1548" height="934" alt="2025-12-02-11:07:25" src="https://github.com/user-attachments/assets/0741c712-7bd7-4c33-9aa9-cbdecf8270e2" />
+Patient View:
+<img width="1720" height="984" alt="2025-12-02-11:29:43" src="https://github.com/user-attachments/assets/c83321a3-0cfa-4491-86c5-0f0e6212c516" />
 
+Administration View:
 <img width="1433" height="899" alt="2025-12-02-11:07:49" src="https://github.com/user-attachments/assets/ca76eb3b-1696-429a-9c5b-7f3f6a8bf70c" />
 
 Add/Edit Modal:
