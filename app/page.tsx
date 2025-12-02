@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import Tabs from '@/components/Tabs';
 import DataTable from '@/components/DataTable';
+import PatientList from '@/components/PatientList';
+import PatientDetail from '@/components/PatientDetail';
 import { Patient, Doctor, Appointment } from '@/lib/types';
 import {
   getPatients,
@@ -14,6 +16,7 @@ import {
   updateDoctor,
   deleteDoctor,
   getAppointments,
+  getAppointmentsByPatient,
   createAppointment,
   updateAppointment,
   deleteAppointment,
@@ -35,8 +38,17 @@ import {
 
 const tabs = [
   {
+    id: 'patient-view',
+    label: 'Patient View',
+    icon: (
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+      </svg>
+    ),
+  },
+  {
     id: 'patients',
-    label: 'Patients',
+    label: 'Manage Patients',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -45,7 +57,7 @@ const tabs = [
   },
   {
     id: 'doctors',
-    label: 'Doctors',
+    label: 'Manage Doctors',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -54,7 +66,7 @@ const tabs = [
   },
   {
     id: 'appointments',
-    label: 'Appointments',
+    label: 'Manage Appointments',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -64,15 +76,49 @@ const tabs = [
 ];
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('patients');
+  const [activeTab, setActiveTab] = useState('patient-view');
   const [patients, setPatients] = useState<Patient[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Patient View state
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [patientAppointments, setPatientAppointments] = useState<Appointment[]>([]);
+  const [loadingPatientAppointments, setLoadingPatientAppointments] = useState(false);
+
   useEffect(() => {
     loadAllData();
   }, []);
+
+  // Load appointments when a patient is selected
+  useEffect(() => {
+    if (selectedPatient) {
+      loadPatientAppointments(selectedPatient.id);
+    } else {
+      setPatientAppointments([]);
+    }
+  }, [selectedPatient]);
+
+  async function loadPatientAppointments(patientId: number) {
+    setLoadingPatientAppointments(true);
+    try {
+      const data = await getAppointmentsByPatient(patientId);
+      setPatientAppointments(data);
+    } catch (error) {
+      console.error('Failed to load patient appointments:', error);
+      setPatientAppointments([]);
+    } finally {
+      setLoadingPatientAppointments(false);
+    }
+  }
+
+  function handleSelectPatient(patient: Patient) {
+    setSelectedPatient(patient);
+  }
+
+  // Create a Map of doctors for quick lookup
+  const doctorsMap = new Map(doctors.map(d => [d.id, d]));
 
   async function loadAllData() {
     try {
@@ -109,6 +155,39 @@ export default function Home() {
 
   function renderActiveTab() {
     switch (activeTab) {
+      case 'patient-view':
+        return (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Patient List - Left Side */}
+            <div className="lg:col-span-1">
+              <PatientList
+                patients={patients}
+                selectedPatientId={selectedPatient?.id ?? null}
+                onSelectPatient={handleSelectPatient}
+              />
+            </div>
+
+            {/* Patient Detail - Right Side */}
+            <div className="lg:col-span-2">
+              {selectedPatient ? (
+                <PatientDetail
+                  patient={selectedPatient}
+                  appointments={patientAppointments}
+                  doctors={doctorsMap}
+                  loading={loadingPatientAppointments}
+                />
+              ) : (
+                <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
+                  <svg className="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  <p className="mt-4 text-lg font-medium">Select a Patient</p>
+                  <p className="mt-1">Choose a patient from the list to view their details and appointments.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        );
       case 'patients':
         return (
           <DataTable<Patient>

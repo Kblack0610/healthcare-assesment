@@ -28,9 +28,9 @@ export interface DataTableProps<T extends { id: number }> {
   columns: Column<T>[];
   formFields: FormField[];
   loading: boolean;
-  onAdd: (data: Record<string, unknown>) => Promise<void>;
-  onUpdate: (id: number, data: Record<string, unknown>) => Promise<void>;
-  onDelete: (id: number) => Promise<void>;
+  onAdd: (data: Record<string, unknown>) => Promise<unknown>;
+  onUpdate: (id: number, data: Record<string, unknown>) => Promise<unknown>;
+  onDelete: (id: number) => Promise<unknown>;
   onRefresh: () => void;
   itemToFormData: (item: T | null) => Record<string, string>;
   parseFormData: (formData: Record<string, string>) => Record<string, unknown>;
