@@ -44,3 +44,5 @@ I have the frontend pointed to 5001, please start the server there. Use `npm run
   ### Features
   - Patient-Doctor relationship view - See all appointments for a patient/doctor
   - Dashboard with stats - Total patients, upcoming appointments, etc.
+
+This is basic start to being able to view organize patients, appointments, and doctors. Further integration would be needed to make this a streamline experience to maintain the relationship between these entities. I'm happy to further extend on the work setup here, wasn't sure how in-depth we wanted to go from the instructions. Also, I had better commits messages showing my thought processes throughout, I had to create a new repo to keep the server code out and didn't keep my git commit history saved. Happy to talk through any of my thoughts while building this.
